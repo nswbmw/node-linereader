@@ -1,0 +1,31 @@
+{
+  "name": "linereader",
+  "version": "1.0.0",
+  "description": "Reading a url or file line by line.",
+  "main": "./linereader.js",
+  "scripts": {
+    "test": "node ./example"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nswbmw/node-linereader.git"
+  },
+  "keywords": [
+    "line-by-line",
+    "line",
+    "file",
+    "reader",
+    "fs",
+    "byline",
+    "eachline",
+    "line-reader"
+  ],
+  "author": "nswbmw",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/nswbmw/node-linereader/issues"
+  },
+  "dependencies": {
+    "iconv-lite": "*"
+  }
+}
