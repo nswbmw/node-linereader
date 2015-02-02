@@ -56,7 +56,12 @@ LineReader.prototype._initStream = function () {
       console.error(err);
     });
   } else {
-    self._readStream = fs.createReadStream(this._filepath, { encoding: this._encoding });
+    if (Buffer.isEncoding(this._encoding)) {
+      self._readStream = fs.createReadStream(this._filepath, {encoding:this._encoding});
+    }
+    else{
+      self._readStream = fs.createReadStream(this._filepath);
+    }
     _initStream();
   }
 
