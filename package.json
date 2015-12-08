@@ -1,6 +1,6 @@
 {
   "name": "linereader",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Reading a url or file line by line.",
   "main": "./linereader.js",
   "scripts": {

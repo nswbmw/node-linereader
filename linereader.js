@@ -10,24 +10,27 @@
  * - use `StringDecoder` when `encoding` set to `utf8` or `ascii` or `base64`
  */
 
-var path = require('path');
 var fs = require('fs');
+var path = require('path');
 var util = require('util');
-var events = require("events");
+var events = require('events');
 var iconv = require('iconv-lite');
 var StringDecoder = require('string_decoder').StringDecoder;
 
 // let's make sure we have a setImmediate function (node.js <0.10)
-if (typeof setImmediate == 'undefined') {
+if (typeof setImmediate === 'undefined') {
   var setImmediate = process.nextTick;
 }
 
+var urlPrefix = /^https?:\/\//i;
+
 var LineReader = function (filepath, options) {
   var self = this;
+  options = options || {};
 
-  this._filepath = new RegExp("https?", "i").test(filepath) ? filepath : path.normalize(filepath);
-  this._encoding = (options && options.encoding && iconv.encodingExists(options.encoding)) ? options.encoding : 'utf8';
-  this._skipEmptyLines = options && options.skipEmptyLines || false;
+  this._filepath = urlPrefix.test(filepath) ? filepath : path.normalize(filepath);
+  this._encoding = (options.encoding && iconv.encodingExists(options.encoding)) ? options.encoding : 'utf8';
+  this._skipEmptyLines = options.skipEmptyLines || false;
   this._readStream = null;
   this._lines = [];
   this._lineFragment = '';
@@ -47,8 +50,8 @@ util.inherits(LineReader, events.EventEmitter);
 LineReader.prototype._initStream = function () {
   var self = this;
 
-  if (new RegExp("https?", "i").test(self._filepath)) {
-    var protocol = new RegExp("https?", "i").exec(self._filepath);
+  if (urlPrefix.test(self._filepath)) {
+    var protocol = urlPrefix.exec(self._filepath);
     require(protocol[0].toLowerCase()).get(self._filepath, function (res) {
       self._readStream = res;
       _initStream();
@@ -57,9 +60,8 @@ LineReader.prototype._initStream = function () {
     });
   } else {
     if (Buffer.isEncoding(this._encoding)) {
-      self._readStream = fs.createReadStream(this._filepath, {encoding:this._encoding});
-    }
-    else{
+      self._readStream = fs.createReadStream(this._filepath, {encoding: this._encoding});
+    } else {
       self._readStream = fs.createReadStream(this._filepath);
     }
     _initStream();
@@ -67,8 +69,9 @@ LineReader.prototype._initStream = function () {
 
   function _initStream() {
     var decoderString = "";
-    if ((self._encoding === "utf8") || (self._encoding === "base64") || (self._encoding === "ascii")) {
-      var decoder = new StringDecoder(self._encoding);
+    var decoder;
+    if (['utf8', 'base64', 'ascii'].indexOf(self._encoding) !== -1) {
+      decoder = new StringDecoder(self._encoding);
     }
     self._readStream.on('error', function (err) {
       self.emit('error', err);
