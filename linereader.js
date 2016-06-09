@@ -52,7 +52,7 @@ LineReader.prototype._initStream = function () {
 
   if (urlPrefix.test(self._filepath)) {
     var protocol = urlPrefix.exec(self._filepath);
-    require(protocol[0].toLowerCase()).get(self._filepath, function (res) {
+    require(protocol[0].toLowerCase().substring(0,protocol[0].indexOf(":"))).get(self._filepath, function (res) {
       self._readStream = res;
       _initStream();
     }).on('error', function(err) {
