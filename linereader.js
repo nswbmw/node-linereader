@@ -52,7 +52,6 @@ LineReader.prototype._initStream = function () {
 
   if (urlProtocolRegex.test(self._filepath)) {
     var module = urlProtocolRegex.exec(self._filepath)[1].toLowerCase() // http or https
-
     require(module).get(self._filepath, function (res) {
       self._readStream = res;
       _initStream();
