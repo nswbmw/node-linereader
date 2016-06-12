@@ -22,13 +22,13 @@ if (typeof setImmediate === 'undefined') {
   var setImmediate = process.nextTick;
 }
 
-var urlPrefix = /^https?:\/\//i;
+var urlProtocolRegex = /^(https?):\/\//i
 
 var LineReader = function (filepath, options) {
   var self = this;
   options = options || {};
 
-  this._filepath = urlPrefix.test(filepath) ? filepath : path.normalize(filepath);
+  this._filepath = urlProtocolRegex.test(filepath) ? filepath : path.normalize(filepath);
   this._encoding = (options.encoding && iconv.encodingExists(options.encoding)) ? options.encoding : 'utf8';
   this._skipEmptyLines = options.skipEmptyLines || false;
   this._readStream = null;
@@ -50,9 +50,9 @@ util.inherits(LineReader, events.EventEmitter);
 LineReader.prototype._initStream = function () {
   var self = this;
 
-  if (urlPrefix.test(self._filepath)) {
-    var protocol = urlPrefix.exec(self._filepath);
-    require(protocol[0].toLowerCase()).get(self._filepath, function (res) {
+  if (urlProtocolRegex.test(self._filepath)) {
+    var module = urlProtocolRegex.exec(self._filepath)[1].toLowerCase() // http or https
+    require(module).get(self._filepath, function (res) {
       self._readStream = res;
       _initStream();
     }).on('error', function(err) {
